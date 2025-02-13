@@ -11,6 +11,10 @@ namespace Kreta.Desktop.ViewModels.SchoolSubjects
     {
         private readonly ISubjectHttpService _httpService;
 
+        public SubjectsManagmentViewModel()
+        {
+        }
+
         // 1.b Konstruktorban innektáljuk a ISubjectsHttpService
         public SubjectsManagmentViewModel(ISubjectHttpService? httpService)
         {
