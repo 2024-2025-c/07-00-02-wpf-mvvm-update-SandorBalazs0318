@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Kreta.Desktop.ViewModels.Base;
 using Kreta.HttpService.Services;
 using Kreta.Shared.Models.Entites.SchoolCitizens;
+using Kreta.Shared.Models.Responses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,6 +47,21 @@ namespace Kreta.Desktop.ViewModels.SchoolCitizens
         {
             List<Teacher> teachers = await _httpService.GetAllAsync();
             Teachers = new ObservableCollection<Teacher>(teachers);
+        }
+
+        [RelayCommand]
+        public async Task DoSaveTeacher(Teacher teacher)
+        {
+            if (teacher is not null)
+            {
+                Response response;
+                if (teacher.HasId)
+                    response = await _httpService.UpdateAsync(teacher);
+                else
+                    response = await _httpService.InsertAsync(teacher);
+                ClearForm();
+                await UpdateViewAsync();
+            }
         }
 
         [RelayCommand]
