@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Kreta.Desktop.ViewModels.Base;
 using Kreta.HttpService.Services;
 using Kreta.Shared.Models.Entites;
@@ -16,8 +17,9 @@ namespace Kreta.Desktop.ViewModels.SchoolSubjects
         // 2. A lekért adatok ebben az adatstruktúrában jelennek meg madj a viewn
         [ObservableProperty]
         private ObservableCollection<Subject> _subjects = new ObservableCollection<Subject>();
-        
+
         // 2.b AdatStruktúra a kiválasztott tantárgynak
+        [ObservableProperty]
         private Subject _selectedSubject = new Subject();
         
         public SubjectsManagmentViewModel()
@@ -38,12 +40,36 @@ namespace Kreta.Desktop.ViewModels.SchoolSubjects
             await base.InitializeAsync();
         }
 
+        [RelayCommand]
+        private void DoNewSubject()
+        {
+            ClearForm();
+        }
+
+        [RelayCommand]
+        private async Task DoDelete(Subject subject)
+        {
+            if (subject is not null)
+            {
+                await _httpService.DeleteAsync(subject.Id);
+                ClearForm();
+                await UpdateViewAsync();
+            }    
+        }
+
         private async Task UpdateViewAsync()
         {
             // 1.d HttpServic-en keresztül backend hívás 
            List<Subject> subjects = await _httpService.GetAllAsync();
             // 2.a A megérkezett adatokat újra létrehozzuk a Subjects ObserableCollection
             Subjects = new ObservableCollection<Subject>(subjects);
+        }
+
+        // Felkészülés a dolgozatra
+        private void ClearForm()
+        {
+            SelectedSubject = new Subject();
+            OnPropertyChanged(nameof(SelectedSubject));
         }
     }
 }
